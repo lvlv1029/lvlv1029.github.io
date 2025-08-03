@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>河南省土地利用类型图</title>
+    <script type="text/javascript" src="https://assets.pyecharts.org/assets/v5/echarts.min.js"></script>
+    <style>
+        .chart-container {
+            margin: 20px auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div id="landUseChart" class="chart-container" style="width: 1000px; height: 600px;"></div>
+    <script>
+        var chart = echarts.init(document.getElementById('landUseChart'), 'white', {renderer: 'canvas'});
+        
+        // 优化后的土地利用类型配色方案
+        var landColors = [
+            "#E6A65D", // 耕地 - 土黄色
+            "#228B22", // 林地 - 深绿色
+            "#708090", // 灌木 - 灰绿色
+            "#7CFC00", // 草地 - 嫩绿色
+            "#1E90FF", // 水域 - 蓝色
+            "#F5DEB3", // 裸地 - 沙色
+            "#CD5C5C"  // 建筑 - 红褐色
+        ];
+
+        var option = {
+            "animation": true,
+            "animationDuration": 1500,
+            "animationEasing": "elasticOut",
+            "color": landColors,
+            "series": [
+                {
+                    "type": "pie",
+                    "colorBy": "data",
+                    "legendHoverLink": true,
+                    "selectedMode": false,
+                    "clockwise": true,
+                    "startAngle": 90,
+                    "minAngle": 5, // 最小角度确保小数据也能显示
+                    "avoidLabelOverlap": false,
+                    "data": [
+                        { "name": "耕地", "value": 120476236 },
+                        { "name": "林地", "value": 32860911 },
+                        { "name": "灌木", "value": 66037 },  // 原"园地"改为"灌木"
+                        { "name": "草地", "value": 2160973 },
+                        { "name": "水域", "value": 2275915 },
+                        { "name": "裸地", "value": 2705 },     // 原"滩地"改为"裸地"
+                        { "name": "建筑", "value": 26210533 }
+                    ],
+                    "radius": ["40%", "75%"],
+                    "center": ["50%", "55%"],
+                    "label": {
+                        "show": true,
+                        "position": "outside",
+                        "margin": 10,
+                        "formatter": "{b}: {d}%",
+                        "fontSize": 14,
+                        "color": "#333"
+                    },
+                    "labelLine": {
+                        "show": true,
+                        "length": 20,
+                        "length2": 30,
+                        "smooth": true,
+                        "lineStyle": {
+                            "width": 1.5,
+                            "opacity": 0.7
+                        }
+                    },
+                    "emphasis": { // 鼠标悬停效果
+                        "scale": true,
+                        "scaleSize": 5,
+                        "itemStyle": {
+                            "shadowBlur": 10,
+                            "shadowColor": "rgba(0, 0, 0, 0.3)"
+                        }
+                    },
+                    "itemStyle": {
+                        "borderColor": "#fff",
+                        "borderWidth": 2,
+                        "shadowBlur": 5,
+                        "shadowColor": "rgba(0, 0, 0, 0.1)"
+                    }
+                }
+            ],
+            "legend": [
+                {
+                    "data": ["耕地", "林地", "灌木", "草地", "水域", "裸地", "建筑"],
+                    "show": true,
+                    "left": "center",
+                    "top": "bottom",
+                    "orient": "horizontal",
+                    "padding": 15,
+                    "itemGap": 20,
+                    "itemWidth": 18,
+                    "itemHeight": 18,
+                    "textStyle": {
+                        "fontSize": 13,
+                        "color": "#555"
+                    },
+                    "pageButtonPosition": "end",
+                    "pageIconColor": "#666",
+                    "pageIconInactiveColor": "#ccc"
+                }
+            ],
+            "tooltip": {
+                "show": true,
+                "trigger": "item",
+                "triggerOn": "mousemove",
+                "backgroundColor": "rgba(255, 255, 255, 0.9)",
+                "borderColor": "#ddd",
+                "borderWidth": 1,
+                "padding": 10,
+                "textStyle": {
+                    "color": "#333",
+                    "fontSize": 14
+                },
+                "formatter": function(params) {
+                    return `<div style="font-weight:bold;">${params.name}</div>
+                            <div>占比: ${params.percent.toFixed(2)}%</div>
+                            <div>面积: ${(params.value / 10000).toFixed(2)} 万平方米</div>`;
+                },
+                "extraCssText": "box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 4px;"
+            },
+            "title": [
+                {
+                    "show": true,
+                    "text": "河南省土地利用类型图",
+                    "left": "center",
+                    "top": "10px",
+                    "textStyle": {
+                        "fontSize": 22,
+                        "fontWeight": "bold",
+                        "color": "#333",
+                        "fontFamily": "Arial, sans-serif"
+                    },
+                    "subtext": "各类型土地面积占比分布",
+                    "subtextStyle": {
+                        "fontSize": 14,
+                        "color": "#666",
+                        "padding": [10, 0, 0, 0]
+                    }
+                }
+            ],
+            "toolbox": {
+                "show": true,
+                "orient": "horizontal",
+                "itemSize": 18,
+                "itemGap": 15,
+                "left": "right",
+                "top": "10px",
+                "feature": {
+                    "saveAsImage": {
+                        "type": "png",
+                        "backgroundColor": "#f9f9f9",
+                        "show": true,
+                        "title": "保存为图片",
+                        "pixelRatio": 2 // 高清保存
+                    },
+                    "dataView": {
+                        "show": true,
+                        "title": "数据视图",
+                        "readOnly": true, // 设为只读防止修改
+                        "lang": ["数据视图", "关闭", "刷新"],
+                        "backgroundColor": "#fff",
+                        "textStyle": {
+                            "color": "#333"
+                        }
+                    }
+                }
+            }
+        };
+
+        chart.setOption(option);
+        
+        // 响应窗口大小变化
+        window.addEventListener('resize', function() {
+            chart.resize();
+        });
+    </script>
+</body>
+</html>
